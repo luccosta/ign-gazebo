@@ -507,3 +507,6 @@ cc_library(
         "@gtest//:gtest_main",
     ],
 ) for src in test_sources]
+
+exports_files(["src/CMakeLists.txt"])
+exports_files(["src/cmd/cmdgazebo.rb.in"])
