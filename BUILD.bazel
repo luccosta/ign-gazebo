@@ -11,11 +11,8 @@ load(
     "ign_export_header",
 )
 load(
-    "//ign_bazel:generate_yaml.bzl",
-    "generate_yaml",
-)
-load(
     "//ign_bazel:qt.bzl",
+    "qt_cc_binary",
     "qt_cc_library",
 )
 load(
@@ -328,6 +325,19 @@ cc_library(
     includes = ["include"]
 )
 
+genrule(
+    name = "resources_gen",
+    srcs = [
+        "src/gui/resources/gazebo.qrc",
+        "src/gui/resources/GazeboDrawer.qml",
+    ] + glob(["src/gui/resources/images/*"]),
+    outs = [
+        "qrc_gazebo.cpp"
+    ],
+    cmd = "cd ign_gazebo/src/gui/resources/ && qtchooser -qt=5 -run-tool=rcc --name gazebo gazebo.qrc -o qrc_gazebo.cpp && cp qrc_gazebo.cpp ../../../../$(OUTS)",
+)
+genrule
+
 qt_cc_library(
     name = "ign_gazebo_gui",
     srcs = [
@@ -335,6 +345,7 @@ qt_cc_library(
         "src/gui/GuiFileHandler.cc",
         "src/gui/GuiRunner.cc",
         "src/gui/TmpIface.cc",
+        "qrc_gazebo.cpp"
     ],
     hdrs = [
         "src/gui/GuiFileHandler.hh",
@@ -473,7 +484,14 @@ cc_library(
 
 cc_library(
     name = "ign_gazebo_systems",
-    deps = [":libignition-gazebo-%s-system.so" % system.replace("_", "-") for system in systems]
+    srcs = [":libignition-gazebo-%s-system.so" % system.replace("_", "-") for system in systems],
+    deps = [
+        "//ign_gazebo/src/gui/plugins:libGzScene3D.so",
+        "//ign_gazebo/src/gui/plugins:libComponentInspector.so",
+        "//ign_gazebo/src/gui/plugins:libEntityTree.so",
+        "//ign_gazebo/src/gui/plugins:libTransformControl.so",
+        "//ign_gazebo/src/gui/plugins:IgnGazebo/libEntityContextMenu.so",
+    ]
 )
 
 [cc_test(
@@ -507,3 +525,5 @@ cc_library(
         "@gtest//:gtest_main",
     ],
 ) for src in test_sources]
+
+exports_files(["CMakeLists.txt", "src/cmd/cmdgazebo.rb.in"])
