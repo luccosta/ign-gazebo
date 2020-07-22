@@ -526,4 +526,4 @@ cc_library(
     ],
 ) for src in test_sources]
 
-exports_files(["CMakeLists.txt", "src/cmd/cmdgazebo.rb.in"])
+exports_files(["src/CMakeLists.txt", "src/cmd/cmdgazebo.rb.in"])

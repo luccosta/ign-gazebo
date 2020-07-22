@@ -56,6 +56,7 @@ std::unique_ptr<ignition::gui::Application> createGui(
   // Initialize Qt app
   auto app = std::make_unique<ignition::gui::Application>(_argc, _argv);
   app->AddPluginPath(IGN_GAZEBO_GUI_PLUGIN_INSTALL_DIR);
+  app->AddPluginPath("./ign_gazebo/src/gui/plugins");
 
   // Temporary transport interface
   auto tmp = new ignition::gazebo::TmpIface();
